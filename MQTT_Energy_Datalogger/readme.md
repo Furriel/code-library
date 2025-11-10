@@ -6,7 +6,7 @@ Firmware modular para **ESP32** que atua como **broker MQTT embarcado** e **regi
 
 ##  Funcionalidades principais
 
-- Cria um **Access Point dedicado** (`MQTT_Energy_LOGGER / sige1234`)
+- Cria um **Access Point dedicado** (`MQTT_Energy_LOGGER / 12345678`)
 - Executa o **broker MQTT local** (`EmbeddedMqttBroker`)
 - Mantém um **cliente interno** (`PubSubClient`) inscrito no tópico `#`
 - Converte payloads JSON em **colunas CSV**
@@ -54,12 +54,4 @@ Instale via Gerenciador de Bibliotecas (Arduino IDE):
 
 ---
 
-##  Próximos passos
-
-- Adicionar timestamp real (RTC/NTP)
-- Implementar modo STA (WiFi de rede existente)
-- Padronizar cabeçalho CSV (U, I, P, Q, FP, E+, E− etc.)
-
----
-
-© 2025 - Projeto SIGE / IF Goiano — Furriel, Geovanne et al.
+© 2025 - Furriel, Geovanne 

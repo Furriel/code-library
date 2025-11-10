@@ -7,7 +7,7 @@ Responsabilidade:
 -----------------
 Função principal do sistema. Realiza a sequência de inicialização dos módulos:
 
-1. setupAccessPoint()  → Cria o Access Point da ESP32 (rede SIGE_MQTT_LOGGER).
+1. setupAccessPoint()  → Cria o Access Point da ESP32 (rede MQTT_Energy_LOGGER).
 2. loggerInit()        → Inicializa o cartão SD e o arquivo CSV.
 3. brokerInit()        → Inicia o broker MQTT embarcado (EmbeddedMqttBroker) 
                          e o cliente interno de logging (PubSubClient).

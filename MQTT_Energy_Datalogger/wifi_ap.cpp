@@ -9,7 +9,7 @@ Configura a ESP32 em modo Access Point com os parâmetros definidos em config.h.
 
 Comportamento:
 --------------
-- Inicia o AP SIGE_MQTT_LOGGER com a senha especificada.
+- Inicia o AP MQTT_Energy_LOGGER com a senha especificada.
 - Em caso de falha, mantém o sistema em loop de erro.
 - Em caso de sucesso, exibe via Serial:
     - SSID ativo.

@@ -10,7 +10,7 @@ utilizado como rede dedicada para o broker MQTT embarcado.
 
 Função exposta:
 ---------------
-- setupAccessPoint(): configura o modo AP, inicia a rede SIGE_MQTT_LOGGER e
+- setupAccessPoint(): configura o modo AP, inicia a rede MQTT_Energy_LOGGER e
   imprime no Serial o IP da ESP32, que será usado como endereço do broker.
 
 ================================================================================

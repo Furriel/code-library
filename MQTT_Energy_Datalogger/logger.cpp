@@ -60,7 +60,7 @@ void loggerInit() {
             delay(1000);
         }
     }
-    Serial.println("✅ SD OK.");
+    Serial.println("SD OK.");
 
     // Se arquivo já existe e tem conteúdo, assumimos cabeçalho já escrito
     if (SD.exists(CSV_FILE_PATH)) {
