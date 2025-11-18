@@ -25,19 +25,34 @@ Fluxo de execução:
 */
 
 #include <Arduino.h>
+#include <WiFi.h>
 #include "wifi_ap.h"
 #include "logger.h"
 #include "broker_handler.h"
 
+static unsigned long lastPrint = 0;  // controle do print de estações conectadas
+
 void setup() {
     Serial.begin(115200);
-    delay(1000);
+    delay(500);
 
     setupAccessPoint();  // Cria o AP e mostra IP do broker
+    delay(500);
     loggerInit();        // Inicializa SD / CSV
+    delay(500);
     brokerInit();        // Sobe o broker MQTT interno + cliente logger
+    delay(500);
+
 }
 
 void loop() {
     brokerLoop();        // Mantém o cliente interno escutando e logando
+
+    unsigned long now = millis();
+    if (now - lastPrint > 5000) {  // a cada 5 segundos
+        int n = WiFi.softAPgetStationNum();
+        Serial.print("Estações conectadas ao AP: ");
+        Serial.println(n);
+        lastPrint = now;
+    }
 }

@@ -1,25 +1,3 @@
-/*
-================================================================================
-DATALOGGER ANALISADOR DE ENERGIA MQTT - CONFIGURAÇÕES GERAIS
-================================================================================
-
-Responsabilidade:
------------------
-Centraliza todas as constantes de configuração do sistema, incluindo:
-
-- Parâmetros do Access Point WiFi (SSID e senha).
-- Pino CS do cartão SD e caminho do arquivo CSV.
-- Porta do broker MQTT embarcado.
-- Limites de buffer e quantidade máxima de chaves para o parser JSON.
-
-Observação:
------------
-Ajuste estes valores conforme o hardware e a aplicação (ex.: pino do SD,
-nome da rede, limites de memória para JSON).
-
-==============================================================================
-*/
-
 #pragma once
 
 // ------------------------------
@@ -27,8 +5,8 @@ nome da rede, limites de memória para JSON).
 // ------------------------------
 
 // WiFi Access Point
-#define AP_SSID        "MQTT_Energy_LOGGER*"
-#define AP_PASS        "12345678"      // mínimo 8 caracteres
+#define AP_SSID        "MQTT_MiEnergy_Esp"
+#define AP_PASS        "1234567890"      // mínimo 8 caracteres
 
 // SD Card
 #define SD_CS_PIN      5
@@ -38,5 +16,20 @@ nome da rede, limites de memória para JSON).
 #define MQTT_BROKER_PORT 1883
 
 // JSON / CSV
-#define MAX_KEYS          80           // Máximo de colunas extraídas
-#define JSON_BUFFER_SIZE  4096         // Ajuste conforme tamanho típico do payload
+#define MAX_KEYS          200           // Máximo de colunas extraídas
+#define JSON_BUFFER_SIZE  12288        // Ajuste conforme tamanho típico do payload
+
+// ----------------------------------------------------
+// Modo de descoberta da estrutura do JSON
+// 1 = imprime chaves/valores no Serial e NÃO grava no SD
+// 0 = grava normalmente no CSV
+// ----------------------------------------------------
+#define DISCOVERY_MODE 0
+
+// ----------------------------------------------------
+// Filtro de tópico (opcional)
+// - String vazia ""        -> aceita todos os tópicos
+// - Ex: "MiEnergy/"        -> só processa tópicos que
+//                             comecem com "MiEnergy/"
+// ----------------------------------------------------
+#define TOPIC_FILTER ""
