@@ -1,0 +1,7 @@
+ni .gitignore -Value @"
+resultados_qualidade_energia/
+*.png
+*.csv
+__pycache__/
+*.pyc
+"@
