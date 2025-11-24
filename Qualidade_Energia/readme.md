@@ -84,7 +84,7 @@ pip install pandas numpy matplotlib
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/usuario/analise-qualidade-energia.git
+git clone https://github.com/Furriel/analise_qualidade_energia.git
 cd analise-qualidade-energia
 ```
 
@@ -164,22 +164,12 @@ Ideal para:
 
 ---
 
-## 🔄 Expansões futuras sugeridas
-
-* Dashboard em Streamlit/Plotly
-* Suporte a múltiplos arquivos CSV
-* Relatório automático em PDF
-* Cálculo de consumo e perdas estimadas
-* Correlação com ocupação ou calendário acadêmico
-
----
-
 ## 📚 Citação sugerida
 
 Se utilizar este código em TCC, artigo ou relatório:
 
 ```
-Furriel, G. (2025). Diagnóstico Energético e Avaliação da Qualidade da Energia em Edificação Educacional Pública. Instituto Federal Goiano – Campus Trindade.
+Atualizar quando TCC for publicado
 ```
 
 ---
@@ -206,4 +196,4 @@ Pesquisa acadêmica aplicada desenvolvida no
 
 ## ✅ Licença
 
-* `CC BY 4.0` — ideal para contexto acadêmico
+* `CC BY 4.0` 
