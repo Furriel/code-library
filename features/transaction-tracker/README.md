@@ -2,6 +2,49 @@
 
 Rastreador simples para correlacionar comandos com ACK ou erro usando um numero de sequencia.
 
+## Getting Started - 2 minutos
+
+Pre-requisito: Node.js instalado.
+
+Na raiz do repositorio:
+
+```bash
+cd features/transaction-tracker
+node tests/test.js
+```
+
+Resultado esperado:
+
+```text
+PASS transaction-tracker
+```
+
+Para testar manualmente, crie `example.js` nesta pasta:
+
+```javascript
+const { TransactionTracker } = require('./src/transaction_tracker');
+
+const tracker = new TransactionTracker();
+tracker.start(1, 'read_status');
+
+setTimeout(() => {
+  tracker.handleEnvelope({
+    type: 'ack',
+    payload: { ref_sequence: 1 }
+  });
+
+  console.log(tracker.get(1));
+}, 100);
+```
+
+Execute:
+
+```bash
+node example.js
+```
+
+O resultado deve mostrar a transacao `1` finalizada como ACK e uma latencia proxima de 100 ms.
+
 ## Por que existe
 
 Em comunicacoes assincronas, a resposta pode chegar depois de outros eventos. O `sequence` identifica cada comando e o `ref_sequence` identifica a resposta correspondente.
