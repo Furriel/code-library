@@ -2,6 +2,47 @@
 
 Formato pequeno e generico para padronizar mensagens entre dispositivos, servidores, simuladores e interfaces.
 
+## Getting Started - 2 minutos
+
+Pre-requisito: Node.js instalado.
+
+Na raiz do repositorio:
+
+```bash
+cd features/message-envelope
+node tests/test.js
+```
+
+Resultado esperado:
+
+```text
+PASS message-envelope
+```
+
+Para testar no seu proprio codigo, crie `example.js` dentro desta pasta:
+
+```javascript
+const { createMessage, createAck } = require('./src/message_envelope');
+
+const command = createMessage({
+  type: 'cmd',
+  sequence: 1,
+  source: 'example',
+  payload: { command: 'start' }
+});
+
+console.log(command);
+console.log(createAck(command.sequence, { status: 'ok' }));
+```
+
+Execute:
+
+```bash
+node example.js
+```
+
+Se aparecerem um comando e seu ACK com `ref_sequence: 1`, a feature esta pronta para uso.
+
 ## Tipos suportados
 
 - `cmd`
