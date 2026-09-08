@@ -3,8 +3,14 @@ name: Reusable Features Validation
 on:
   pull_request:
     paths:
-      - "features/**"
-      - "README.md"
+      # Markdown puro nao dispara os builds. Isso evita consumir um minuto
+      # tarifado inteiro para alteracoes que nao mudam comportamento.
+      - "features/**/*.js"
+      - "features/**/*.cpp"
+      - "features/**/*.h"
+      - "features/**/package.json"
+      - "features/**/package-lock.json"
+      - "features/**/platformio.ini"
       - ".github/workflows/reusable-features.yml"
 
 jobs:
@@ -48,3 +54,12 @@ jobs:
 
       - name: Build ESP32 bridge B
         run: pio run -d features/serial-espnow-bridge -e bridge_b
+
+      - name: Build ESP32 SD file server
+        run: pio run -d features/esp32-sd-file-server
+
+      - name: Build ESP32 SD rotating logger
+        run: pio run -d features/esp32-sd-rotating-logger
+
+      - name: Build I2C bus recovery
+        run: pio run -d features/i2c-bus-recovery
