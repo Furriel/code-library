@@ -34,7 +34,18 @@ Execute:
 node example.js
 ```
 
-Se o objeto retornar latitude, longitude, `rtk_fix`, 18 satelites, HDOP 0.8 e altitude 721.5 m, a feature esta funcionando.
+Se o objeto retornar latitude, longitude, `rtk_fixed`, 18 satelites, HDOP 0.8 e altitude 721.5 m, a feature esta funcionando.
+
+## Onde mexer no codigo
+
+Arquivo principal: `src/nmea_gga.js`.
+
+| Quero entender/alterar... | Procure por |
+|---|---|
+| conversao de NMEA para graus decimais | `[1] CONVERSAO DE COORDENADAS` |
+| nomes GPS/DGPS/RTK | `[2] QUALIDADE DO FIX` |
+| campos da sentenca GGA | `[3] PARSER PRINCIPAL` |
+| objeto final retornado pela funcao | comentario `formato publico retornado` dentro de `[3]` |
 
 ## O que faz
 

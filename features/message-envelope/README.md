@@ -43,6 +43,20 @@ node example.js
 
 Se aparecerem um comando e seu ACK com `ref_sequence: 1`, a feature esta pronta para uso.
 
+## Onde mexer no codigo
+
+Arquivo principal: `src/message_envelope.js`.
+
+O arquivo possui um indice `LEIA NESTA ORDEM`. Para procurar diretamente no editor:
+
+| Quero alterar... | Procure por |
+|---|---|
+| tipos aceitos (`cmd`, `ack`, etc.) | `[1] TIPOS DE MENSAGEM` |
+| estrutura comum de uma mensagem | `[2] CRIACAO DE MENSAGEM GENERICA` |
+| formato do ACK | `[3] CRIACAO DE ACK` |
+| formato do erro | `[4] CRIACAO DE ERRO` |
+| regras de validacao | `[5] VALIDACAO` |
+
 ## Tipos suportados
 
 - `cmd`
