@@ -1,0 +1,50 @@
+name: Reusable Features Validation
+
+on:
+  pull_request:
+    paths:
+      - "features/**"
+      - "README.md"
+      - ".github/workflows/reusable-features.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test message envelope
+        run: node features/message-envelope/tests/test.js
+
+      - name: Test transaction tracker
+        run: node features/transaction-tracker/tests/test.js
+
+      - name: Test NMEA GGA parser
+        run: node features/nmea-gga-parser/tests/test.js
+
+      - name: Install WebSocket feature dependencies
+        run: npm install --prefix features/websocket-command-channel
+
+      - name: Test WebSocket command channel
+        run: npm test --prefix features/websocket-command-channel
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PlatformIO
+        run: python -m pip install platformio
+
+      - name: Build ESP32 bridge A
+        run: pio run -d features/serial-espnow-bridge -e bridge_a
+
+      - name: Build ESP32 bridge B
+        run: pio run -d features/serial-espnow-bridge -e bridge_b

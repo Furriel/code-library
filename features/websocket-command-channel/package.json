@@ -1,0 +1,12 @@
+{
+  "name": "websocket-command-channel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Small standalone WebSocket command/response channel",
+  "scripts": {
+    "test": "node tests/e2e.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
