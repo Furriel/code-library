@@ -47,6 +47,40 @@ A placa deve responder com um JSON semelhante a:
 
 Isso confirma firmware, Serial e comandos locais. A comunicacao ESP-NOW entre duas placas exige duas ESP32 e e tratada separadamente como teste de bancada.
 
+## Onde mexer no codigo
+
+Comece por `include/bridge_config.h` quando a mudanca for de configuracao e por `src/main.cpp` quando for de comportamento.
+
+### `include/bridge_config.h`
+
+| Quero alterar... | Procure por |
+|---|---|
+| baudrate da Serial | `[1] SERIAL` |
+| intervalo do heartbeat | `[2] HEARTBEAT` |
+| limite do JSON | `[3] TAMANHO MAXIMO DO JSON` |
+| assinatura/versao do pacote | `[4] IDENTIFICACAO DO PACOTE` |
+| nome do papel do bridge | `[5] PAPEL / NOME DO BRIDGE` |
+
+### `src/main.cpp`
+
+| Quero entender/alterar... | Procure por |
+|---|---|
+| formato enviado pelo ESP-NOW | `[1] PACOTE TRANSPORTADO` |
+| contadores mostrados em STATUS | `[2] ESTADO E CONTADORES` |
+| envio Serial -> ESP-NOW | `[4] ENVIO SERIAL -> ESP-NOW` |
+| recepcao ESP-NOW -> Serial | `[5] CALLBACKS DO ESP-NOW` |
+| comandos STATUS e PEER | `[6] INTERPRETACAO DE UMA LINHA` |
+| leitura caractere a caractere da Serial | `[7] LEITURA DA SERIAL` |
+| inicializacao do radio | `[8] INICIALIZACAO DO ESP-NOW` |
+| `setup()` e `loop()` | `[9] CICLO PRINCIPAL DO ARDUINO` |
+
+O topo de `main.cpp` tambem mostra o fluxo completo:
+
+```text
+Serial -> processSerial() -> processLine() -> sendJson() -> ESP-NOW
+ESP-NOW -> onEspNowReceive() -> Serial.println()
+```
+
 ## Hardware e ambiente
 
 - Microcontrolador: ESP32 classico / ESP32 DevKit.
