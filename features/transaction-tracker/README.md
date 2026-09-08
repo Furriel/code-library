@@ -45,6 +45,18 @@ node example.js
 
 O resultado deve mostrar a transacao `1` finalizada como ACK e uma latencia proxima de 100 ms.
 
+## Onde mexer no codigo
+
+Arquivo principal: `src/transaction_tracker.js`.
+
+| Quero entender/alterar... | Procure por |
+|---|---|
+| onde as transacoes ficam armazenadas | `[1] MEMORIA INTERNA` |
+| registro de um novo comando | `[2] INICIO DE UMA TRANSACAO` |
+| calculo da latencia e encerramento | `[3] FINALIZACAO` |
+| tratamento de ACK e erro recebidos | `[4] ENTRADA DE RESPOSTAS` |
+| consulta e limpeza do historico | `[5] CONSULTAS` |
+
 ## Por que existe
 
 Em comunicacoes assincronas, a resposta pode chegar depois de outros eventos. O `sequence` identifica cada comando e o `ref_sequence` identifica a resposta correspondente.
