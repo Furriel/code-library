@@ -22,6 +22,9 @@ Depois escolha uma feature. Cada pasta possui um `Getting Started - 2 minutos` c
 | [`nmea-gga-parser`](features/nmea-gga-parser/) | `cd features/nmea-gga-parser && node tests/test.js` |
 | [`websocket-command-channel`](features/websocket-command-channel/) | `cd features/websocket-command-channel && npm install && npm test` |
 | [`serial-espnow-bridge`](features/serial-espnow-bridge/) | `cd features/serial-espnow-bridge && pio run -e bridge_a` |
+| [`esp32-sd-file-server`](features/esp32-sd-file-server/) | `cd features/esp32-sd-file-server && pio run` |
+| [`esp32-sd-rotating-logger`](features/esp32-sd-rotating-logger/) | `cd features/esp32-sd-rotating-logger && pio run` |
+| [`i2c-bus-recovery`](features/i2c-bus-recovery/) | `cd features/i2c-bus-recovery && pio run` |
 
 > Os comandos acima sao apenas atalhos. O README de cada feature explica pre-requisitos, resultado esperado, exemplo minimo e nivel de validacao.
 
@@ -42,6 +45,13 @@ Os arquivos principais possuem no topo uma secao `LEIA NESTA ORDEM` e blocos num
 | recepcao ESP-NOW -> Serial | `features/serial-espnow-bridge/src/main.cpp` | `[5] CALLBACKS DO ESP-NOW` |
 | comandos `STATUS` e `PEER` | `features/serial-espnow-bridge/src/main.cpp` | `[6] INTERPRETACAO DE UMA LINHA` |
 | fluxo principal do firmware ESP32 | `features/serial-espnow-bridge/src/main.cpp` | `[9] CICLO PRINCIPAL` |
+| regras de acesso aos arquivos do SD | `features/esp32-sd-file-server/src/sd_file_server.cpp` | `[2] VALIDACAO DE CAMINHO` |
+| listagem de arquivos do SD | `features/esp32-sd-file-server/src/sd_file_server.cpp` | `[6] LISTAGEM DE ARQUIVOS` |
+| download HTTP do SD | `features/esp32-sd-file-server/src/sd_file_server.cpp` | `[7] DOWNLOAD` |
+| criacao automatica de pastas no SD | `features/esp32-sd-rotating-logger/src/sd_rotating_logger.cpp` | `[2] DIRETORIOS` |
+| nome/rotacao do arquivo de log | `features/esp32-sd-rotating-logger/src/sd_rotating_logger.cpp` | `[3] CAMINHO DO ARQUIVO` |
+| escrita e flush do log | `features/esp32-sd-rotating-logger/src/sd_rotating_logger.cpp` | `[4] GRAVACAO` |
+| recuperacao de I2C travado | `features/i2c-bus-recovery/src/i2c_bus_recovery.cpp` | `[2] PULSOS DE CLOCK`, `[3] CONDICAO STOP` |
 
 ### Padrao de comentarios
 
@@ -77,6 +87,9 @@ Cada arquivo principal deve ter:
 | [`nmea-gga-parser`](features/nmea-gga-parser/) | Converte sentencas NMEA GGA em latitude, longitude e informacoes do fix | Independente de MCU | Node.js / qualquer editor | Teste funcional |
 | [`websocket-command-channel`](features/websocket-command-channel/) | Canal WebSocket simples com comando, ACK, erro, estado e telemetria | Independente de MCU | Node.js / qualquer editor | Teste E2E local |
 | [`serial-espnow-bridge`](features/serial-espnow-bridge/) | Bridge Serial JSON <-> ESP-NOW com diagnostico e heartbeat | ESP32 | PlatformIO + VS Code, framework Arduino | Compilacao validada; bancada fisica pendente |
+| [`esp32-sd-file-server`](features/esp32-sd-file-server/) | Lista e baixa arquivos do microSD por um servidor HTTP local somente leitura | ESP32 | PlatformIO + VS Code, Arduino | Build em CI; hardware pendente |
+| [`esp32-sd-rotating-logger`](features/esp32-sd-rotating-logger/) | Cria pastas por data e grava logs com rotacao horaria ou diaria | ESP32 | PlatformIO + VS Code, Arduino | Build em CI; hardware pendente |
+| [`i2c-bus-recovery`](features/i2c-bus-recovery/) | Tenta liberar SDA travada com pulsos de SCL e uma condicao STOP | ESP32 | PlatformIO + VS Code, Arduino | Build em CI; hardware pendente |
 
 ## Estrutura de uma feature
 
@@ -84,11 +97,12 @@ Cada arquivo principal deve ter:
 features/
   nome-da-feature/
     README.md
+    include/         # quando necessario
     src/
-    tests/
-    examples/       # quando necessario
-    package.json    # quando necessario
-    platformio.ini  # quando necessario
+    tests/           # quando houver teste de software independente de hardware
+    examples/        # quando necessario
+    package.json     # quando necessario
+    platformio.ini   # quando necessario
 ```
 
 Nao e necessario clonar ou usar outra feature para executar uma pasta individual. Quando duas features usam ideias compativeis, a compatibilidade e mantida por formatos simples, nao por dependencia entre diretorios.
