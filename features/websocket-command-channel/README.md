@@ -2,6 +2,59 @@
 
 Canal WebSocket pequeno para sistemas que precisam enviar comandos e receber ACK, erro, estado e telemetria.
 
+## Getting Started - 2 minutos
+
+Pre-requisitos: Node.js e npm instalados.
+
+Na raiz do repositorio:
+
+```bash
+cd features/websocket-command-channel
+npm install
+npm test
+```
+
+Resultado esperado:
+
+```text
+PASS websocket-command-channel E2E
+```
+
+O teste ja faz o ciclo completo automaticamente:
+
+```text
+cliente -> comando -> servidor -> ACK/erro -> cliente
+```
+
+Tambem valida broadcast de `state` e `telemetry`.
+
+Para usar em um programa, crie `example.js` nesta pasta:
+
+```javascript
+const { createCommandServer } = require('./src/server');
+
+createCommandServer({
+  port: 8787,
+  commandHandler(payload) {
+    if (payload.command === 'ping') {
+      return { accepted: true, payload: { value: 'pong' } };
+    }
+
+    return { accepted: false, code: 1200, message: 'unknown command' };
+  }
+});
+
+console.log('WebSocket ativo em ws://127.0.0.1:8787');
+```
+
+Execute:
+
+```bash
+node example.js
+```
+
+Se o servidor iniciar sem erro, a feature esta pronta para receber clientes WebSocket.
+
 ## O que faz
 
 - recebe mensagens `cmd`;
