@@ -55,6 +55,23 @@ node example.js
 
 Se o servidor iniciar sem erro, a feature esta pronta para receber clientes WebSocket.
 
+## Onde mexer no codigo
+
+Arquivo principal: `src/server.js`.
+
+| Quero entender/alterar... | Procure por |
+|---|---|
+| formato das mensagens | `[1] FORMATO DA MENSAGEM` |
+| porta e callback da aplicacao | `[2] CRIACAO DO SERVIDOR` |
+| envio para um cliente | `[3] ENVIO PARA UM CLIENTE` |
+| broadcast de state/telemetry | `[4] BROADCAST` |
+| validacao e tratamento de comandos | `[5] ENTRADA DE CONEXOES E COMANDOS` |
+| ACK de comando aceito | `5.5` dentro da secao `[5]` |
+| erros vindos do commandHandler | `accepted=false` e `handler error` dentro de `[5]` |
+| fechamento do servidor | `[6] ENCERRAMENTO` |
+
+Na maioria das aplicacoes voce nao precisa alterar `server.js`: passe sua regra em `commandHandler()`.
+
 ## O que faz
 
 - recebe mensagens `cmd`;
