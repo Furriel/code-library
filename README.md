@@ -4,6 +4,27 @@ Biblioteca de exemplos e componentes independentes para sistemas embarcados, com
 
 O objetivo deste repositorio e manter codigo simples, legivel e de livre reutilizacao. Cada feature deve funcionar de forma independente: ela nao pode depender de outra pasta deste repositorio para compilar, executar ou ser testada.
 
+## Comece em 2 minutos
+
+Clone o repositorio:
+
+```bash
+git clone https://github.com/Furriel/code-library.git
+cd code-library
+```
+
+Depois escolha uma feature. Cada pasta possui um `Getting Started - 2 minutos` com os comandos minimos para executar ou validar o codigo.
+
+| Feature | Teste rapido |
+|---|---|
+| [`message-envelope`](features/message-envelope/) | `cd features/message-envelope && node tests/test.js` |
+| [`transaction-tracker`](features/transaction-tracker/) | `cd features/transaction-tracker && node tests/test.js` |
+| [`nmea-gga-parser`](features/nmea-gga-parser/) | `cd features/nmea-gga-parser && node tests/test.js` |
+| [`websocket-command-channel`](features/websocket-command-channel/) | `cd features/websocket-command-channel && npm install && npm test` |
+| [`serial-espnow-bridge`](features/serial-espnow-bridge/) | `cd features/serial-espnow-bridge && pio run -e bridge_a` |
+
+> Os comandos acima sao apenas atalhos. O README de cada feature explica pre-requisitos, resultado esperado, exemplo minimo e nivel de validacao.
+
 ## Regras para novas features
 
 1. Cada feature fica em sua propria pasta.
@@ -11,7 +32,7 @@ O objetivo deste repositorio e manter codigo simples, legivel e de livre reutili
 3. Dependencias externas devem estar declaradas dentro da propria feature.
 4. O codigo deve priorizar clareza em vez de abstracoes desnecessarias.
 5. Funcoes importantes devem possuir comentarios explicando o que fazem e por que existem.
-6. Cada feature deve possuir um README com ambiente, hardware, IDE, dependencias, exemplo de uso e teste.
+6. Cada feature deve possuir um README com ambiente, hardware, IDE, dependencias, exemplo de uso, teste e um `Getting Started - 2 minutos`.
 7. O status de validacao deve distinguir teste de software, compilacao e teste em hardware.
 
 ## Features
