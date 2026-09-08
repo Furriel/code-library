@@ -2,6 +2,40 @@
 
 Parser pequeno e independente para sentencas NMEA GGA (`$GPGGA` e `$GNGGA`).
 
+## Getting Started - 2 minutos
+
+Pre-requisito: Node.js instalado.
+
+Na raiz do repositorio:
+
+```bash
+cd features/nmea-gga-parser
+node tests/test.js
+```
+
+Resultado esperado:
+
+```text
+PASS nmea-gga-parser
+```
+
+Para testar uma leitura real, crie `example.js` nesta pasta:
+
+```javascript
+const { parseGga } = require('./src/nmea_gga');
+
+const line = '$GNGGA,123519,1634.1234,S,04915.2345,W,4,18,0.8,721.5,M,0.0,M,,*52';
+console.log(parseGga(line));
+```
+
+Execute:
+
+```bash
+node example.js
+```
+
+Se o objeto retornar latitude, longitude, `rtk_fix`, 18 satelites, HDOP 0.8 e altitude 721.5 m, a feature esta funcionando.
+
 ## O que faz
 
 Converte uma sentenca GGA em um objeto com:
