@@ -1,10 +1,21 @@
-# Exemplos públicos de Inteligência Artificial aplicada à Engenharia Elétrica
+# Exemplos públicos — Inteligência Artificial aplicada à Engenharia Elétrica
 
-Notebooks prontos das quatro aulas finais da trilha didática. O material interativo e os roteiros ficam no repositório [Furriel/IA](https://github.com/Furriel/IA) e na página pública https://furriel.github.io/IA/.
+Notebooks independentes para execução no Colab. O roteiro didático e as simulações ficam no [site da disciplina](https://furriel.github.io/IA/). Para executar um experimento, abra somente o notebook correspondente e selecione **Ambiente de execução → Executar tudo**.
 
-- [Perceptron, MLP e SOM](redes-neurais/laboratorio.ipynb) — aulas 1 e 2.
-- [Motor PMSM (estudo opcional com dados do Kaggle)](redes-neurais/estudo-motor/laboratorio-motor-kaggle.ipynb).
-- [Lógica fuzzy](fuzzy/laboratorio-fuzzy.ipynb) — aula 3.
-- [Algoritmos genéticos](geneticos/laboratorio-geneticos.ipynb) — aula 4.
+## Aula 1 — Perceptron (11/11)
+- [OR](redes-neurais/perceptron-or.ipynb)
+- [Limitação XOR](redes-neurais/perceptron-xor.ipynb)
 
-Os notebooks não incluem dados externos nem resultados inventados. Para executar, abra o arquivo no Google Colab, salve uma cópia e execute as células na ordem. Também é possível baixar o `.ipynb` e importar no Kaggle ou Jupyter.
+## Aula 2 — MLP e SOM (18/11)
+- [MLP XOR](redes-neurais/mlp-xor.ipynb)
+- [SOM 2D](redes-neurais/som-organizacao-2d.ipynb)
+- [SOM 5×7](redes-neurais/som-reconhecimento.ipynb)
+- [PMSM (complementar)](redes-neurais/estudo-motor/laboratorio-motor-kaggle.ipynb) — dataset externo obtido via kagglehub no Colab, sujeito à disponibilidade
+
+## Aula 3 — Fuzzy (25/11)
+- [Ventilação de painel elétrico](fuzzy/laboratorio-fuzzy.ipynb)
+
+## Aula 4 — Algoritmos genéticos (02/12)
+- [Recarga de veículos elétricos](geneticos/laboratorio-geneticos.ipynb)
+
+**Compatibilidade:** o antigo [laboratorio.ipynb](redes-neurais/laboratorio.ipynb) agora é apenas um índice dos cinco experimentos separados. Os arquivos não incluem resultados fictícios nem o dataset do PMSM. Há **um único relatório final no Moodle**.
