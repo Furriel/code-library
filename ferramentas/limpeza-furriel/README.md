@@ -39,6 +39,38 @@ O pacote de retorno fica em D:\GitHub\_Auditorias_Furriel\DATA-HORA-PID.zip.
 - pastas-revisao.csv — validacao, releases, snapshots e logs na raiz (apenas inventario)
 - RESUMO.txt, operacao.log e ZIP para revisao
 
+## Preparar plano revisado (segunda auditoria de 19/11/2026)
+
+A auditoria revisada encontrou **39 diretorios Git**, **871 branches**, **160 entradas
+no plano** e **47 pastas de validacao/logs**. Cerca de 6,92 GB estavam em
+dependencias, dos quais 5,17 GB no GroveAI_SkinCancer\.venv-train.
+
+O script Preparar-Plano.ps1 cria **plano-revisado.csv** na propria pasta da
+auditoria, sem excluir nada. Exemplo de selecao conservadora:
+
+    $base = 'D:\GitHub\Furriel\code-library\ferramentas\limpeza-furriel'
+    & "$base\Preparar-Plano.ps1" -PlanoOrigem 'D:\GitHub\_Auditorias_Furriel\20261119-123728-20336\plano.csv' -IncluirBranchesLocais -IncluirNodeModules -IncluirBuilds
+
+Esta selecao inclui caches descartaveis, branches locais incorporadas,
+node_modules com arquivo lock na pasta imediatamente superior e builds
+de repositorios sem alteracoes locais. Nao inclui as 73 branches remotas,
+logs de homologacao, copias do Silico Board nem os 5,17 GB do ambiente de
+treino GroveAI.
+
+Para incluir **explicitamente** o ambiente de treino, acrescente
+-IncluirAmbienteTreino. A existencia de requirements.txt e pyproject.toml
+nao garante que seja possivel reproduzir bibliotecas e modelos exatamente
+como no ambiente anterior; preserve o ambiente se tiver duvidas.
+
+Revise o plano-revisado.csv antes de aplicar:
+
+    & "$base\Limpar-Furriel.ps1" -Aplicar -Plano 'D:\GitHub\_Auditorias_Furriel\20261119-123728-20336\plano-revisado.csv'
+
+Aplicar exige confirmacao digitada. O script revalida SHAs, PRs, worktrees,
+Git e caminhos antes das exclusoes. O `-Aplicar` nao foi executado
+remotamente. Em caso de desenvolvimento ativo, considere reinstalar
+dependencias antes de retomar o trabalho (npm ci, pnpm install etc.).
+
 ## Aplicar um plano revisado
 
 **Importante (19/11/2026):** a auditoria inicial identificou 791 caches
