@@ -41,7 +41,7 @@ if ($Saida -eq $Raiz -or $Saida.StartsWith($Raiz + '\',[StringComparison]::Ordin
 $ExecDir = Join-Path $Saida ((Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + $PID)
 New-Item -ItemType Directory -Path $ExecDir -Force | Out-Null
 $Log = Join-Path $ExecDir 'operacao.log'
-$Protegidas = @('main','master','dev','develop','development','staging','production','prod','release/*','stable/*','backup/*','homolog/*','integracao/*')
+$Protegidas = @('main','master','dev','develop','development','staging','production','prod','release/*','release-*','stable/*','backup/*','backup-*','bkp-*','snapshot/*','rescue/*','rollback/*','homolog/*','integracao/*')
 $Caches = @('playwright-report','test-results','coverage','htmlcov','.pytest_cache','.mypy_cache','.ruff_cache','.turbo','.parcel-cache','__pycache__','.nyc_output','.tox')
 $Builds = @('dist','build','out','target','.next','.nuxt','.svelte-kit')
 $Dependencias = @('node_modules','.venv','venv')
