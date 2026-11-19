@@ -166,6 +166,31 @@ e o push utiliza --force-with-lease. Na falta de GitHub CLI, acesso aos PRs,
 ancestralidade, branch padrao ou SHA igual, a exclusao e bloqueada.
 A operacao nao afeta worktrees nem arquivos de teste/validacao.
 
+## Aplicar as 33 branches remotas revisadas (19/11/2026)
+
+O relatorio REMOTAS-20261119-150718-15840 identificou 66 branches
+distintas: 33 elegiveis e 33 bloqueadas. As elegiveis estao limitadas
+a SGAEE (22), OpenBUS (9) e code-library (2). O script agora aplica
+uma lista de permissao para esses tres repositorios: nenhum outro
+repositorio pode ter branches excluidas nesta etapa, mesmo editando
+o CSV. GroveAI permanece integralmente protegido.
+
+Execute somente depois de revisar plano-remotas.csv:
+
+    $repo = 'D:\GitHub\Furriel\code-library'
+    git -C $repo switch main
+    if ($LASTEXITCODE -ne 0) { throw 'Falha no switch' }
+    git -C $repo pull --ff-only origin main
+    if ($LASTEXITCODE -ne 0) { throw 'Falha no pull' }
+    $plano = 'D:\GitHub\_Auditorias_Furriel\REMOTAS-20261119-150718-15840\plano-remotas.csv'
+    if (-not (Test-Path -LiteralPath $plano)) { throw 'Plano local nao encontrado' }
+    & "$repo\ferramentas\limpeza-furriel\Limpar-Remotas.ps1" -Aplicar -PlanoRemotas $plano
+
+E obrigatorio digitar EXCLUIR REMOTAS para autorizar a execucao. Cada
+branch sera verificada novamente; alteracoes de SHA, novos PRs ou
+uso em worktree bloqueiam a exclusao. Os resultados vao para um novo
+REMOTAS-*.zip.
+
 ## Auditoria das copias de validacao (sem exclusao)
 
 O script Analisar-Copias.ps1 reutiliza duplicados.csv e pastas-revisao.csv
