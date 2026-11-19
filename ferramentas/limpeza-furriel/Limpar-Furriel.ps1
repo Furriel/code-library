@@ -275,6 +275,31 @@ function Auditoria {
         }
         AvaliarArquivos $repo $limite
     }
+    $duplicados=@(
+        foreach($grupo in @($script:Repos.ToArray() | Where-Object { $_.GitHub } | Group-Object -Property GitHub | Where-Object { $_.Count -gt 1 })) {
+            foreach($copia in $grupo.Group) {
+                [pscustomobject]@{
+                    GitHub=$grupo.Name; Copias=$grupo.Count; Caminho=$copia.Repositorio
+                    AlteracoesLocais=$copia.AlteracoesLocais
+                    Acao='REVISAR_SEPARADAMENTE_NUNCA_EXCLUIR_AUTOMATICAMENTE'
+                }
+            }
+        }
+    )
+    Csv $duplicados (Join-Path $ExecDir 'duplicados.csv') 'GitHub,Copias,Caminho,AlteracoesLocais,Acao'
+    $pastas=@(
+        foreach($p in @(Get-ChildItem -LiteralPath $Raiz -Directory -Force -ErrorAction SilentlyContinue)) {
+            if ($p.Name -match '(?i)(validac[aã]o|release|logs|backup|snapshot|b0[0-9])') {
+                [pscustomobject]@{
+                    Nome=$p.Name; Caminho=$p.FullName
+                    ModificadoEm=$p.LastWriteTime.ToString('o')
+                    Bytes=(Tamanho $p.FullName)
+                    Acao='REVISAR_SEPARADAMENTE_NUNCA_EXCLUIR_AUTOMATICAMENTE'
+                }
+            }
+        }
+    )
+    Csv $pastas (Join-Path $ExecDir 'pastas-revisao.csv') 'Nome,Caminho,ModificadoEm,Bytes,Acao'
     Csv $script:Repos.ToArray() (Join-Path $ExecDir 'repositorios.csv') 'Repositorio,GitHub,BranchPadrao,FetchOK,ComparacaoConfiavel,AlteracoesLocais,PRsVerificados'
     Csv $script:Branches.ToArray() (Join-Path $ExecDir 'branches.csv') 'Repositorio,Origem,Branch,SHA,Upstream,UpstreamStatus,Protegida,Worktree,PRaberto,Incorporada,Candidata'
     Csv $script:Arquivos.ToArray() (Join-Path $ExecDir 'arquivos.csv') 'Repositorio,Caminho,Tipo,Elegivel,Ignorado,Rastreado,Bytes'
@@ -282,6 +307,9 @@ function Auditoria {
     @(
         "Raiz: $Raiz",
         "Repositorios: $($script:Repos.Count)",
+        "Copias de repositorios para revisar: $($duplicados.Count)",
+        "Pastas de validacao/logs para revisar: $($pastas.Count)",
+        'Ambientes virtuais sao inventariados como uma dependencia; seu conteudo interno nao e listado.',
         "Branches inventariadas: $($script:Branches.Count)",
         "Itens propostos: $($script:Acoes.Count)",
         'Para aprovar, revise o plano.csv e edite somente Autorizar=SIM/NAO.',
