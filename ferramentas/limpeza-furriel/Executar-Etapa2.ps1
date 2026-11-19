@@ -28,6 +28,25 @@ if (-not (Get-Command git.exe -ErrorAction SilentlyContinue)) {
 }
 $audDir=Join-Path $Auditorias $IdAuditoria
 $obrigatorios=@('plano.csv','duplicados.csv','pastas-revisao.csv','repositorios.csv')
+# Se a pasta de auditorias foi movida, localizar copia em locais provaveis.
+if (-not (Test-Path -LiteralPath (Join-Path $audDir 'plano.csv') -PathType Leaf)) {
+    $raizesPossiveis=@(
+        (Join-Path $Raiz '_Auditorias_Furriel'),
+        (Join-Path (Split-Path -Parent $Raiz) '_Auditorias_Furriel'),
+        (Join-Path $env:USERPROFILE 'Downloads'),
+        (Join-Path $env:USERPROFILE 'Documents'),
+        (Join-Path $env:USERPROFILE 'Desktop')
+    )
+    foreach($basePossivel in @($raizesPossiveis | Select-Object -Unique)) {
+        $possivel=Join-Path $basePossivel $IdAuditoria
+        if (Test-Path -LiteralPath (Join-Path $possivel 'plano.csv') -PathType Leaf) {
+            $Auditorias=$basePossivel
+            $audDir=$possivel
+            Write-Host "Pasta de auditorias localizada: $Auditorias" -ForegroundColor Cyan
+            break
+        }
+    }
+}
 $completo=$true
 foreach($nome in $obrigatorios) {
     if (-not (Test-Path -LiteralPath (Join-Path $audDir $nome) -PathType Leaf)) {
