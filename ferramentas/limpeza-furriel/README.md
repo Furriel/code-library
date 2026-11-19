@@ -57,10 +57,10 @@ de repositorios sem alteracoes locais. Nao inclui as 73 branches remotas,
 logs de homologacao, copias do Silico Board nem os 5,17 GB do ambiente de
 treino GroveAI.
 
-Para incluir **explicitamente** o ambiente de treino, acrescente
--IncluirAmbienteTreino. A existencia de requirements.txt e pyproject.toml
-nao garante que seja possivel reproduzir bibliotecas e modelos exatamente
-como no ambiente anterior; preserve o ambiente se tiver duvidas.
+**Excecao permanente:** por determinacao do usuario, o repositorio
+GroveAI_SkinCancer esta protegido integralmente (arquivos, caches, .venv-train,
+branch master, branches remotas e imagens Docker). A opcao
+-IncluirAmbienteTreino NAO permite excluir o GroveAI, nem usando planos antigos.
 
 Revise o plano-revisado.csv antes de aplicar:
 
@@ -95,11 +95,46 @@ confirmacao individual EXCLUIR REMOTA. A exclusao utiliza force-with-lease.
 
 ## Docker
 
-O inventario e somente leitura. **Docker prune afeta a maquina inteira.**
-Se desejar limpar manualmente, acrescente -LimparDocker -DiasDocker 30
-na execucao com -Aplicar. Exige LIMPAR DOCKER GLOBAL. Elimina apenas
-containers parados, imagens dangling e cache de build antigos; nao apaga
-volumes, containers ativos, nem executa docker compose down.
+O inventario e somente leitura. **Docker prune global esta BLOQUEADO**
+no script, pois imagens e caches Docker do GroveAI nao podem ser
+identificados com seguranca. Nenhuma imagem, container, volume ou cache
+Docker e removido nesta etapa.
+
+## Etapa 2 — Branches remotas (novembro de 2026)
+
+O ultimo relatorio de limpeza confirmou 55 exclusoes locais e 4 referencias
+ja ausentes. Existem 73 registros de branches remotas, mas sete entradas sao
+duplicadas entre IFAEE e IFAEE-VALIDACAO (66 branches distintas).
+
+A nova ferramenta Limpar-Remotas.ps1 tem **modo de auditoria por padrao**.
+Ela exige Git e GitHub CLI autenticados. A analise:
+
+1. Deduplica por repositorio GitHub e nome de branch.
+2. Bloqueia GroveAI, Silico Board, artigos, review e energy_analyzer.
+3. Preserva backups, releases, branches de staging/rollback e tags de versao.
+4. Exige commit com ao menos 14 dias, incorporado por ancestralidade.
+5. Verifica branch padrao, SHA remota, PRs abertos e worktrees.
+6. Gera plano-remotas.csv e um ZIP sem excluir nada.
+
+No PowerShell:
+
+    $repo = 'D:\GitHub\Furriel\code-library'
+    git -C $repo switch main
+    if ($LASTEXITCODE -ne 0) { throw 'Falha no switch para main' }
+    git -C $repo pull --ff-only origin main
+    if ($LASTEXITCODE -ne 0) { throw 'Falha no pull' }
+    $script = "$repo\ferramentas\limpeza-furriel\Limpar-Remotas.ps1"
+    & $script -PlanoAuditoria 'D:\GitHub\_Auditorias_Furriel\20261119-123728-20336\plano.csv'
+
+O plano e gerado em D:\GitHub\_Auditorias_Furriel\REMOTAS-...,
+com as branches ELEGIVEL/Autorizar=SIM. **Revise o arquivo antes de aplicar.**
+
+    & $script -Aplicar -PlanoRemotas 'D:\GitHub\_Auditorias_Furriel\REMOTAS-...\plano-remotas.csv'
+
+A exclusao requer digitar EXCLUIR REMOTAS. A validacao e refeita na hora
+e o push utiliza --force-with-lease. Na falta de GitHub CLI, acesso aos PRs,
+ancestralidade, branch padrao ou SHA igual, a exclusao e bloqueada.
+A operacao nao afeta worktrees nem arquivos de teste/validacao.
 
 ## Duplicatas e evidencias
 
