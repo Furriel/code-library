@@ -381,7 +381,7 @@ function DockerLimpeza {
 function Compactar {
     try {
         $zip=$ExecDir + '.zip'
-        Compress-Archive -LiteralPath (Join-Path $ExecDir '*') -DestinationPath $zip -Force -CompressionLevel Optimal
+        Compress-Archive -Path (Join-Path $ExecDir '*') -DestinationPath $zip -Force -CompressionLevel Optimal
         Write-Host "ZIP para enviar ao ChatGPT: $zip" -ForegroundColor Cyan
     } catch {
         # PowerShell 5.1 suporta -Path com wildcard de forma mais consistente.
