@@ -118,6 +118,19 @@ function Worktrees([string]$Repo) {
     if (-not $r.OK) { return @() }
     return @($r.Linhas | Where-Object { $_ -like 'branch refs/heads/*' } | ForEach-Object { $_.Substring(18) })
 }
+function DependenciaNome([string]$Nome) {
+    return ($Nome -in $script:Dependencias -or $Nome -match '^(?:\.venv(?:[-_].+)?|venv(?:[-_].+)?)$')
+}
+function DentroDependencia([string]$Repo,[string]$Caminho) {
+    if (-not (Abaixo $Caminho $Repo)) { return $true }
+    $rel=$Caminho.Substring($Repo.Length).TrimStart('\','/')
+    $partes=@($rel -split '[\\/]')
+    if ($partes.Count -lt 2) { return $false }
+    for($i=0; $i -lt ($partes.Count - 1); $i++) {
+        if ((DependenciaNome $partes[$i]) -or $partes[$i] -eq 'site-packages') { return $true }
+    }
+    return $false
+}
 function Repositorios {
     $achados=[Collections.Generic.List[string]]::new()
     $fila=[Collections.Generic.Queue[object]]::new()
@@ -238,7 +251,7 @@ function Auditoria {
                 $emUso=$nome -in $d.Worktrees
                 $prAberto=$d.PR.Verificado -and $nome -in $d.PR.Nomes
                 $merged=$d.Valido -and (Ancestral $repo $sha $d.Base)
-                $permitido=$merged -and -not $protegido -and -not $emUso -and -not $prAberto -and -not $d.Dirty
+                $permitido=$merged -and -not $protegido -and -not $emUso -and -not $prAberto -and $d.PR.Verificado -and -not $d.Dirty
                 $script:Branches.Add([pscustomobject]@{ Repositorio=$repo; Origem='Local'; Branch=$nome; SHA=$sha; Upstream=$p[2]; UpstreamStatus=$p[3]; Protegida=$protegido; Worktree=$emUso; PRaberto=$prAberto; Incorporada=$merged; Candidata=$permitido })
                 if ($permitido) { Adicionar 'BranchLocal' $repo $nome $sha 'Commit incorporado na branch padrao; worktree livre; repositorio limpo' '' '' 'SIM' }
             }
@@ -283,7 +296,8 @@ function ValidarBranch([object]$Item) {
     if (-not $d.Valido -or $d.Dirty) { return 'Git nao atualizado ou alteracoes locais' }
     if (Protegida $nome $d.Padrao) { return 'Branch protegida' }
     if ($nome -in $d.Worktrees) { return 'Branch usada em worktree' }
-    if ($d.PR.Verificado -and $nome -in $d.PR.Nomes) { return 'PR aberto' }
+    if (-not $d.PR.Verificado) { return 'Nao foi possivel verificar PRs abertos' }
+    if ($nome -in $d.PR.Nomes) { return 'PR aberto' }
     if ($tipo -eq 'BranchRemota' -and -not $d.PR.Verificado) { return 'Verificacao dos PRs indisponivel' }
     $ref=if ($tipo -eq 'BranchLocal') { 'refs/heads/' + $nome } else { 'refs/remotes/origin/' + $nome }
     $atual=Git $repo @('rev-parse','--verify',$ref)
@@ -303,6 +317,7 @@ function ValidarArquivo([object]$Item) {
     if (-not (Test-Path -LiteralPath (Join-Path $repo '.git')) -or -not (Test-Path -LiteralPath $alvo)) { return 'Caminho ou repo inexistente' }
     $obj=Get-Item -LiteralPath $alvo -Force
     if ($obj.Attributes -band [IO.FileAttributes]::ReparsePoint) { return 'Link/juncao nao permitido' }
+    if (DentroDependencia $repo $alvo) { return 'Alvo interno de ambiente virtual/dependencias: bloqueado' }
     if ($obj.LastWriteTime.ToString('o') -ne [string]$Item.ModificadoEm) { return 'Data mudou desde o inventario' }
     if (Rastreado $repo $alvo) { return 'Arquivo ou pasta rastreada pelo Git' }
     if ($tipo -eq 'CachePasta') {
@@ -310,7 +325,7 @@ function ValidarArquivo([object]$Item) {
     } elseif ($tipo -eq 'BuildPasta') {
         if (-not $obj.PSIsContainer -or $obj.Name -notin $Builds) { return 'Nao e build conhecido' }
     } elseif ($tipo -eq 'Dependencia') {
-        if (-not $obj.PSIsContainer -or $obj.Name -notin $Dependencias) { return 'Nao e dependencia conhecida' }
+        if (-not $obj.PSIsContainer -or -not (DependenciaNome $obj.Name)) { return 'Nao e dependencia conhecida' }
     } elseif ($tipo -eq 'RelatorioTemporario') {
         if ($obj.PSIsContainer -or -not (RelatorioCandidato $obj.Name)) { return 'Nao e relatorio temporario conhecido' }
     } else { return 'Tipo de operacao nao permitido' }
