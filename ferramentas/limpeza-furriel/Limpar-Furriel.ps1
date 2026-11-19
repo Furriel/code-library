@@ -141,7 +141,7 @@ function Repositorios {
         if ($item.Nivel -ge $ProfundidadeMaxima) { continue }
         foreach($dir in @(Get-ChildItem -LiteralPath $item.Caminho -Directory -Force -ErrorAction SilentlyContinue)) {
             if ($dir.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
-            if ($dir.Name -in $Pular) { continue }
+            if ($dir.Name -in $Pular -or (DependenciaNome $dir.Name)) { continue }
             $fila.Enqueue([pscustomobject]@{ Caminho=$dir.FullName; Nivel=($item.Nivel+1) })
         }
     }
@@ -186,9 +186,12 @@ function AvaliarArquivos([string]$Repo,[datetime]$Limite) {
             if ($dir.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
             if ($dir.Name -eq '.git' -or (Test-Path -LiteralPath (Join-Path $dir.FullName '.git'))) { continue }
             $tipo=''
-            if ($dir.Name -in $Caches) { $tipo='CachePasta' }
+            if (DependenciaNome $dir.Name) {
+                if (-not $IncluirDependencias) { continue }
+                $tipo='Dependencia'
+            }
+            elseif ($dir.Name -in $Caches) { $tipo='CachePasta' }
             elseif ($IncluirBuilds -and $dir.Name -in $Builds) { $tipo='BuildPasta' }
-            elseif ($IncluirDependencias -and $dir.Name -in $Dependencias) { $tipo='Dependencia' }
             if ($tipo) {
                 $tracked=Rastreado $Repo $dir.FullName
                 $ignorado=Ignorado $Repo $dir.FullName
