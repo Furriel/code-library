@@ -191,6 +191,36 @@ branch sera verificada novamente; alteracoes de SHA, novos PRs ou
 uso em worktree bloqueiam a exclusao. Os resultados vao para um novo
 REMOTAS-*.zip.
 
+## Etapa 3 — Residuos locais apos auditoria COPIAS (19/11/2026)
+
+O arquivo COPIAS-20261119-150713-15840.zip registrou 62 diretorios:
+25 PRESERVAR, 4 WORKTREE_NAO_REMOVER_DIRETORIO,
+1 PRESERVAR_POR_ALTERACOES_OU_COMMITS_PENDENTES e
+32 REVISAR_MANUALMENTE_SEM_EXCLUSAO.
+
+Nao remover EngQuest: 13 alteracoes locais, 22 commits a frente
+e 14 atras de sua referencia. EngQuest-concursos, -multiano e
+-revisao-2017 tem commits proprios. IFAEE-VALIDACAO e worktree limpa
+da main, mas sua remocao exige usar git worktree remove, NUNCA
+Remove-Item diretamente. Os diretorios Silico B03/B04 estao protegidos.
+
+Para aprofundar os 24 diretorios workboard-P10-*-B03 e os logs
+SAPE/IFAEE, use o novo Analisar-Residuos.ps1:
+
+    $repo = 'D:\GitHub\Furriel\code-library'
+    git -C $repo switch main
+    if ($LASTEXITCODE -ne 0) { throw 'Falha no switch' }
+    git -C $repo pull --ff-only origin main
+    if ($LASTEXITCODE -ne 0) { throw 'Falha no pull' }
+    & "$repo\ferramentas\limpeza-furriel\Analisar-Residuos.ps1"
+
+Ele gera pastas.csv (tamanhos), duplicatas-exatas.csv (comparacao SHA256),
+plano-revisao.csv (Autorizar=NAO), erros.csv e RESUMO.txt no ZIP
+RESIDUOS-*.zip. Nao ha opcao de aplicar ou remover arquivos nesse script.
+Pastas com .git, links ou erros de leitura nao sao candidatas.
+GroveAI nao e inspecionado nem modificado. Nao confundir duplicatas de
+arquivos com evidencias descartaveis: ainda requer revisao.
+
 ## Auditoria das copias de validacao (sem exclusao)
 
 O script Analisar-Copias.ps1 reutiliza duplicados.csv e pastas-revisao.csv
