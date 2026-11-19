@@ -61,7 +61,8 @@ function Executar([string]$Programa,[string[]]$Argumentos) {
     $anterior = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     try {
-        $linhas = @(& $Programa @Argumentos 2>$null)
+        $executavel = if ($Programa -eq 'git') { (Get-Command -Name 'git.exe' -CommandType Application -ErrorAction Stop).Source } else { $Programa }
+        $linhas = @(& $executavel @Argumentos 2>$null)
         $codigo = $LASTEXITCODE
     } finally { $ErrorActionPreference = $anterior }
     return [pscustomobject]@{ OK=($codigo -eq 0); Texto=($linhas -join [Environment]::NewLine).Trim(); Linhas=@($linhas) }
