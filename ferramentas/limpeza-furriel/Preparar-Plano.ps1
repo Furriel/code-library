@@ -72,6 +72,8 @@ foreach($registro in $registros) {
         if ((Test-Path -LiteralPath (Join-Path $repo 'pyproject.toml')) -and
             (Test-Path -LiteralPath (Join-Path $repo 'requirements.txt'))) { $aprovado=$true }
     }
+    # O usuario determinou preservar todo o GroveAI, inclusive planos antigos.
+    if ($repo -match '(?i)(?:^|[\\/])GroveAI_SkinCancer(?:[\\/]|$)') { $aprovado=$false }
     # Remotas e logs nunca sao autorizados automaticamente.
     if ($tipo -in @('BranchRemota','RelatorioTemporario')) { $aprovado=$false }
     $registro.Autorizar=if($aprovado){'SIM'}else{'NAO'}
