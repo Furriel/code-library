@@ -9,16 +9,21 @@ Execute no **PowerShell do Windows** (pode colar o bloco inteiro):
 
     $repo = 'D:\GitHub\Furriel\code-library'
     if (Test-Path (Join-Path $repo '.git')) {
-        git -C $repo pull --ff-only
+        git -C $repo fetch origin main
+        if ($LASTEXITCODE -ne 0) { throw 'Falha ao buscar origin/main.' }
+        git -C $repo switch main
+        if ($LASTEXITCODE -ne 0) { throw 'Nao foi possivel mudar para main; preserve alteracoes locais.' }
+        git -C $repo pull --ff-only origin main
     } elseif (-not (Test-Path $repo)) {
-        git clone https://github.com/Furriel/code-library.git $repo
+        git clone --branch main https://github.com/Furriel/code-library.git $repo
     } else {
         throw "Pasta existente sem Git: $repo"
     }
     if ($LASTEXITCODE -ne 0) { throw 'Falha no clone/pull; nada sera executado.' }
-    & (Join-Path $repo 'ferramentas\limpeza-furriel\Executar-Auditoria.ps1')
-
-O primeiro comando so atualiza o code-library; a auditoria faz git fetch --prune
+    $script = Join-Path $repo 'ferramentas\limpeza-furriel\Executar-Auditoria.ps1'
+    if (-not (Test-Path -LiteralPath $script)) { throw "Script nao encontrado: $script" }
+    & $script
+A atualizacao explicita da main evita executar a branch errada. Se houver mudancas locais que impeçam o switch, o Git bloqueia a operacao sem descartá-las. A auditoria faz git fetch --prune
 em cada repositorio encontrado, sem alterar arquivos de trabalho.
 
 O pacote de retorno fica em D:\GitHub\_Auditorias_Furriel\DATA-HORA-PID.zip.
