@@ -100,6 +100,34 @@ no script, pois imagens e caches Docker do GroveAI nao podem ser
 identificados com seguranca. Nenhuma imagem, container, volume ou cache
 Docker e removido nesta etapa.
 
+## Correcao do caminho das auditorias (19/11/2026)
+
+O erro "Auditorias ausentes: D:\GitHub\_Auditorias_Furriel" ocorre
+quando o relatorio do primeiro ciclo nao esta mais naquele caminho.
+Os arquivos ZIP de auditoria anteriores nao precisam ser recriados.
+
+Use **Executar-Etapa2.ps1** no lugar de chamar Limpar-Remotas.ps1 diretamente:
+
+    $repo = 'D:\GitHub\Furriel\code-library'
+    git -C $repo switch main
+    if ($LASTEXITCODE -ne 0) { throw 'Falha ao mudar para main' }
+    git -C $repo pull --ff-only origin main
+    if ($LASTEXITCODE -ne 0) { throw 'Falha ao atualizar main' }
+    & "$repo\ferramentas\limpeza-furriel\Executar-Etapa2.ps1"
+
+A ferramenta procura a pasta de auditorias existente; se estiver ausente,
+procura 20261119-123728-20336.zip em Downloads, Desktop e locais comuns.
+Com ZIP localizado, restaura somente quatro CSVs validados em
+D:\GitHub\_Auditorias_Furriel\20261119-123728-20336.
+
+Se o ZIP estiver em local diferente, informe seu caminho completo:
+
+    & "$repo\ferramentas\limpeza-furriel\Executar-Etapa2.ps1" -ZipAuditoria 'C:\CAMINHO\20261119-123728-20336.zip'
+
+A ferramenta executa APENAS auditorias de copias e branches remotas.
+Ela nao usa -Aplicar, nao apaga branches e nao toca em GroveAI.
+Envie os ZIPs COPIAS-*.zip e REMOTAS-*.zip para avaliacao antes de excluir.
+
 ## Etapa 2 — Branches remotas (novembro de 2026)
 
 O ultimo relatorio de limpeza confirmou 55 exclusoes locais e 4 referencias
