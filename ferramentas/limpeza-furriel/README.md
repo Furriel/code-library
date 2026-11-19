@@ -35,9 +35,17 @@ O pacote de retorno fica em D:\GitHub\_Auditorias_Furriel\DATA-HORA-PID.zip.
 - arquivos.csv — caches, logs, relatorios, builds e dependencias
 - plano.csv — acoes propostas, com coluna Autorizar (SIM/NAO)
 - docker-inventario.txt — containers, Compose, imagens, volumes, espaco
+- duplicados.csv — copias locais que apontam para o mesmo repositorio GitHub
+- pastas-revisao.csv — validacao, releases, snapshots e logs na raiz (apenas inventario)
 - RESUMO.txt, operacao.log e ZIP para revisao
 
 ## Aplicar um plano revisado
+
+**Importante (19/11/2026):** a auditoria inicial identificou 791 caches
+dentro do ambiente virtual GroveAI_SkinCancer\.venv-train. A versao atual
+agora detecta .venv-* como dependencia unica e BLOQUEIA a exclusao de
+pastas internas, mesmo usando planos antigos. Execute outra auditoria
+apos atualizar o Git antes de aplicar uma limpeza.
 
 **Nenhuma exclusao ocorre na primeira auditoria.** Revise o CSV e autorize
 somente os itens que pretende remover. No PowerShell:
@@ -60,6 +68,15 @@ Se desejar limpar manualmente, acrescente -LimparDocker -DiasDocker 30
 na execucao com -Aplicar. Exige LIMPAR DOCKER GLOBAL. Elimina apenas
 containers parados, imagens dangling e cache de build antigos; nao apaga
 volumes, containers ativos, nem executa docker compose down.
+
+## Duplicatas e evidencias
+
+Diretorios de clones e snapshots (especialmente Silico Board, EngQuest e SAPE)
+sao inventariados mas nao entram no plano de exclusao automatica.
+Avalie PRs, worktrees, diferencas locais, arquivos nao rastreados, backups,
+historico de homologacao e dados externos antes de qualquer remocao.
+Em instalacoes com muitos repositórios, -MedirTamanhos mede o espaco
+aproximado de pastas detectadas (e torna a auditoria mais demorada).
 
 ## Regras de seguranca
 
