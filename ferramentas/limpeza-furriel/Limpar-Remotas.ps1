@@ -37,6 +37,13 @@ $BloquearRepos=@(
     'furriel/review',
     'furriel/energy_analyzer'
 )
+# Liberar SOMENTE os tres repositorios classificados na auditoria 20261119-150718.
+# Qualquer ampliacao precisa de revisao de evidencias e alteracao versionada.
+$PermitirRepos=@(
+    'furriel/code-library',
+    'furriel/openbus',
+    'furriel/sgaee'
+)
 $Avaliadas=[Collections.Generic.List[object]]::new()
 $Executadas=[Collections.Generic.List[object]]::new()
 function Mensagem([string]$Msg) {
@@ -84,6 +91,10 @@ function Validar([object]$Item) {
     if (-not (Test-Path -LiteralPath (Join-Path $pasta '.git'))) { $r.Motivo='Git local nao encontrado'; return [pscustomobject]$r }
     if ($pasta -match '(?i)GroveAI_SkinCancer' -or $repo.ToLowerInvariant() -in $BloquearRepos) {
         $r.Motivo='Repositorio protegido (GroveAI, Silico ou pesquisa ativa)'
+        return [pscustomobject]$r
+    }
+    if ($repo.ToLowerInvariant() -notin $PermitirRepos) {
+        $r.Motivo='Fora da lista autorizada nesta etapa: code-library, OpenBUS, SGAEE'
         return [pscustomobject]$r
     }
     if ($repo -ne (NomeRemoto $pasta)) { $r.Motivo='URL origin divergente'; return [pscustomobject]$r }
