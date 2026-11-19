@@ -75,6 +75,12 @@ function Abaixo([string]$Caminho,[string]$Base) {
     catch { return $false }
     return $absoluto.StartsWith($Base + '\',[StringComparison]::OrdinalIgnoreCase)
 }
+function RepositorioProtegido([string]$Repo) {
+    if ($Repo -match '(?i)(?:^|[\\/])GroveAI_SkinCancer(?:[\\/]|$)') { return $true }
+    $url=Git $Repo @('remote','get-url','origin')
+    if ($url.OK -and $url.Texto -match '(?i)github\.com[:/]Furriel/GroveAI_SkinCancer(?:\.git)?$') { return $true }
+    return $false
+}
 function Protegida([string]$Branch,[string]$Padrao) {
     if ($Branch -eq $Padrao) { return $true }
     foreach($p in $script:Protegidas) { if ($Branch -like $p) { return $true } }
@@ -241,6 +247,11 @@ function Auditoria {
     Escrever "Repositorios encontrados: $($lista.Count)"
     $limite=(Get-Date).AddDays(-$DiasMinimos)
     foreach($repo in $lista) {
+        if (RepositorioProtegido $repo) {
+            Escrever "PROTEGIDO: $repo (GroveAI), sem fetch, plano ou exclusoes"
+            $script:Repos.Add([pscustomobject]@{ Repositorio=$repo; GitHub='Furriel/GroveAI_SkinCancer'; BranchPadrao=''; FetchOK=$false; ComparacaoConfiavel=$false; AlteracoesLocais=$true; PRsVerificados=$false })
+            continue
+        }
         Escrever "Auditando $repo"
         $d=Contexto $repo
         $script:Repos.Add([pscustomobject]@{ Repositorio=$repo; GitHub=(Slug $repo); BranchPadrao=$d.Padrao; FetchOK=$d.Fetch; ComparacaoConfiavel=$d.Valido; AlteracoesLocais=$d.Dirty; PRsVerificados=$d.PR.Verificado })
@@ -322,6 +333,7 @@ function Auditoria {
 }
 function ValidarBranch([object]$Item) {
     $repo=[string]$Item.Repositorio; $nome=[string]$Item.Alvo; $tipo=[string]$Item.Tipo; $sha=[string]$Item.SHA
+    if (RepositorioProtegido $repo) { return 'GroveAI protegido integralmente' }
     if (-not (Abaixo $repo $Raiz) -or -not (Test-Path -LiteralPath (Join-Path $repo '.git'))) { return 'Repositorio invalido' }
     $d=Contexto $repo
     if (-not $d.Valido -or $d.Dirty) { return 'Git nao atualizado ou alteracoes locais' }
@@ -344,6 +356,7 @@ function ValidarBranch([object]$Item) {
 }
 function ValidarArquivo([object]$Item) {
     $repo=[string]$Item.Repositorio; $alvo=[string]$Item.Alvo; $tipo=[string]$Item.Tipo
+    if (RepositorioProtegido $repo) { return 'GroveAI protegido integralmente' }
     if (-not (Abaixo $repo $Raiz) -or -not (Abaixo $alvo $repo)) { return 'Caminho fora do repositorio' }
     if (-not (Test-Path -LiteralPath (Join-Path $repo '.git')) -or -not (Test-Path -LiteralPath $alvo)) { return 'Caminho ou repo inexistente' }
     $obj=Get-Item -LiteralPath $alvo -Force
@@ -374,7 +387,8 @@ function Aplicacao {
         $problema=''
         try {
             $tipo=[string]$i.Tipo; $alvo=[string]$i.Alvo; $repo=[string]$i.Repositorio
-            if ($tipo -in @('BranchLocal','BranchRemota')) {
+            if (RepositorioProtegido $repo) { $problema='GroveAI protegido integralmente' }
+            elseif ($tipo -in @('BranchLocal','BranchRemota')) {
                 if ($tipo -eq 'BranchRemota' -and -not $ExcluirRemotas) { $problema='Exige -ExcluirRemotas' }
                 else { $problema=ValidarBranch $i }
                 if (-not $problema -and $tipo -eq 'BranchLocal') {
@@ -438,6 +452,7 @@ function Compactar {
     }
 }
 try {
+    if ($LimparDocker) { throw 'Docker prune global desativado: nao ha como garantir preservacao de imagens/caches do GroveAI. Use somente -IncluirDocker para inventario.' }
     Escrever "Inicio; Aplicar=$Aplicar; Raiz=$Raiz"
     if ($Aplicar) { Aplicacao } else { Auditoria }
     if ($IncluirDocker -or $LimparDocker) {
