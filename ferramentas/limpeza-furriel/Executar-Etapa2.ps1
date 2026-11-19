@@ -1,10 +1,10 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-Recupera a auditoria anterior (pasta ou ZIP) e executa SOMENTE diagnosticos.
+Usa auditoria anterior ou gera nova automaticamente e executa SOMENTE diagnosticos.
 .DESCRIPTION
 Corrige ausencia de D:\GitHub\_Auditorias_Furriel sem inventar resultados:
-usa a pasta existente ou restaura ZIP identificado e validado. Nao exclui
+usa a pasta existente, restaura ZIP valido ou gera auditoria atual. Nao exclui
 branches, clones, arquivos, caches, containers ou volumes Docker.
 #>
 [CmdletBinding()]
@@ -75,10 +75,44 @@ if (-not $completo) {
         }
     }
     if (-not $ZipAuditoria -or -not (Test-Path -LiteralPath $ZipAuditoria -PathType Leaf)) {
-        Write-Host "Auditoria original nao localizada: $audDir" -ForegroundColor Yellow
-        Write-Host "Procure o ZIP $nomedoZip em Downloads ou outra pasta." -ForegroundColor Yellow
-        Write-Host 'Use: & .\Executar-Etapa2.ps1 -ZipAuditoria "C:\CAMINHO\ARQUIVO.zip"'
-        throw 'Nao foi encontrada auditoria completa nem ZIP para restauracao. Nenhuma limpeza ocorreu.'
+        if ($ZipAuditoria) {
+            throw "ZIP informado nao encontrado: $ZipAuditoria"
+        }
+        Write-Host "Auditoria antiga nao encontrada: $audDir" -ForegroundColor Yellow
+        Write-Host 'Sera executada nova auditoria dos repositorios, SEM excluir nada.' -ForegroundColor Cyan
+
+        # Usar novos dados e nao depender de um ZIP antigo no computador.
+        New-Item -ItemType Directory -Force -Path $Auditorias | Out-Null
+        $anteriores=@(Get-ChildItem -LiteralPath $Auditorias -Directory -ErrorAction Stop |
+            Select-Object -ExpandProperty FullName)
+        $auditor=Join-Path $PSScriptRoot 'Limpar-Furriel.ps1'
+        if (-not (Test-Path -LiteralPath $auditor -PathType Leaf)) {
+            throw "Script de auditoria ausente: $auditor"
+        }
+
+        & $auditor -Raiz $Raiz -Saida $Auditorias -DiasMinimos 14 -IncluirRelatorios -IncluirBuilds -IncluirDependencias
+        if (-not $?) { throw 'Nova auditoria falhou. Nenhuma exclusao foi realizada.' }
+
+        $novas=@(Get-ChildItem -LiteralPath $Auditorias -Directory |
+            Where-Object {
+                ($anteriores -notcontains $_.FullName) -and
+                (Test-Path -LiteralPath (Join-Path $_.FullName 'plano.csv') -PathType Leaf) -and
+                (Test-Path -LiteralPath (Join-Path $_.FullName 'duplicados.csv') -PathType Leaf) -and
+                (Test-Path -LiteralPath (Join-Path $_.FullName 'pastas-revisao.csv') -PathType Leaf) -and
+                (Test-Path -LiteralPath (Join-Path $_.FullName 'repositorios.csv') -PathType Leaf)
+            } | Sort-Object LastWriteTime -Descending)
+        if (-not $novas.Count) {
+            throw 'Auditoria executada, mas nenhum relatorio completo foi encontrado. Nenhuma exclusao ocorreu.'
+        }
+        $novoId=$novas[0].Name
+        if ($novoId -notmatch '^\d{8}-\d{6}-\d+$') {
+            throw "Nome da nova auditoria invalido: $novoId"
+        }
+        Write-Host "Nova auditoria concluida: $($novas[0].FullName)" -ForegroundColor Cyan
+        Write-Host 'Continuando automaticamente com a analise de copias e branches remotas...' -ForegroundColor Cyan
+        & $PSCommandPath -Raiz $Raiz -Auditorias $Auditorias -IdAuditoria $novoId -SomenteCopias:$SomenteCopias
+        if (-not $?) { throw 'Falha ao continuar a etapa 2. Nenhuma exclusao automatica ocorreu.' }
+        return
     }
     if ((Split-Path -Leaf $ZipAuditoria) -ne $nomedoZip) {
         throw "ZIP informado nao corresponde a auditoria esperada: $nomedoZip"
