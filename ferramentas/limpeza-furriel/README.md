@@ -117,14 +117,16 @@ Use **Executar-Etapa2.ps1** no lugar de chamar Limpar-Remotas.ps1 diretamente:
 
 A ferramenta procura a pasta de auditorias existente; se estiver ausente,
 procura 20261119-123728-20336.zip em Downloads, Desktop e locais comuns.
-Com ZIP localizado, restaura somente quatro CSVs validados em
-D:\GitHub\_Auditorias_Furriel\20261119-123728-20336.
+Com ZIP localizado, restaura quatro CSVs validados. **Se tambem nao
+encontrar o ZIP, gera automaticamente uma auditoria nova** e continua
+a analise da etapa 2. Nao depende mais do relatorio antigo. Essa nova
+auditoria gera seu proprio ZIP e nao executa exclusoes.
 
 Se o ZIP estiver em local diferente, informe seu caminho completo:
 
     & "$repo\ferramentas\limpeza-furriel\Executar-Etapa2.ps1" -ZipAuditoria 'C:\CAMINHO\20261119-123728-20336.zip'
 
-A ferramenta executa APENAS auditorias de copias e branches remotas.
+A ferramenta faz uma nova auditoria local se necessaria e depois APENAS analises de copias e branches remotas.
 Ela nao usa -Aplicar, nao apaga branches e nao toca em GroveAI.
 Envie os ZIPs COPIAS-*.zip e REMOTAS-*.zip para avaliacao antes de excluir.
 
