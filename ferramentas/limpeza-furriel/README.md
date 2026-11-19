@@ -136,6 +136,19 @@ e o push utiliza --force-with-lease. Na falta de GitHub CLI, acesso aos PRs,
 ancestralidade, branch padrao ou SHA igual, a exclusao e bloqueada.
 A operacao nao afeta worktrees nem arquivos de teste/validacao.
 
+## Auditoria das copias de validacao (sem exclusao)
+
+O script Analisar-Copias.ps1 reutiliza duplicados.csv e pastas-revisao.csv
+para conferir worktrees, clones, branch atual, HEAD, alteracoes nao enviadas,
+divergencias com origin/HEAD e existencia das pastas.
+
+    $base = 'D:\GitHub\Furriel\code-library\ferramentas\limpeza-furriel'
+    & "$base\Analisar-Copias.ps1" -AuditoriaAnterior 'D:\GitHub\_Auditorias_Furriel\20261119-123728-20336'
+
+O resultado sera salvo em D:\GitHub\_Auditorias_Furriel\COPIAS-...zip.
+Nao ha comando de exclusao de pastas neste script. Relatorios Silico B03/B04
+e worktrees sao classificados como protegidos.
+
 ## Duplicatas e evidencias
 
 Diretorios de clones e snapshots (especialmente Silico Board, EngQuest e SAPE)
